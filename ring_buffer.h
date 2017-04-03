@@ -30,16 +30,16 @@ private:
     RingBuffer(const RingBuffer &) = delete;
     RingBuffer &operator=(const RingBuffer &) = delete;
 
-    inline int pow2Next(int d)
+    inline int pow2Next(int value)
     {
-        d--;
-        d |= d >> 1;
-        d |= d >> 2;
-        d |= d >> 4;
-        d |= d >> 8;
-        d |= d >> 16;
-        d++;
-        return d;
+        --value;
+        value |= value >> 1;
+        value |= value >> 2;
+        value |= value >> 4;
+        value |= value >> 8;
+        value |= value >> 16;
+        ++value;
+        return value;
     }
 
 private:
