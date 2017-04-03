@@ -1,5 +1,5 @@
-#ifndef ASYNCQUEUE_H
-#define ASYNCQUEUE_H
+#ifndef ASYNC_QUEUE_H
+#define ASYNC_QUEUE_H
 
 #include <QMutex>
 #include <QQueue>
@@ -67,4 +67,4 @@ private:
     QMutex    m_mutex;
 };
 
-#endif // ASYNCQUEUE_H
+#endif // ASYNC_QUEUE_H
