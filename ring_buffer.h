@@ -1,11 +1,11 @@
-#ifndef RINGBUFFER_H
-#define RINGBUFFER_H
+#ifndef RING_BUFFER_H
+#define RING_BUFFER_H
 
 #include <atomic>
 #include <QtCore>
 
 using namespace std;
-
+// the buffer size is always multiples of 2
 template <typename T>
 class RingBuffer
 {
@@ -183,4 +183,4 @@ bool RingBuffer<T>::write(T *pSrc, quint32 len) noexcept
     return true;
 }
 
-#endif // RINGBUFFER_H
+#endif // RING_BUFFER_H
