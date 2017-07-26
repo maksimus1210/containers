@@ -113,7 +113,7 @@ bool QueueConcurrent<T>::wait(int64_t ms)
     // получаем текущее время
     auto now = chrono::system_clock::now();
 
-    // ожидаем срабатывания условной переменной по тайма ауту или событию notify_one()
+    // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
     m_condVar.wait_until(t_locker, now + ms*1ms);
 
     // возвращает true если контейнер не пуст, иначе возвращаем false
