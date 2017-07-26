@@ -5,11 +5,10 @@
 #include <mutex>
 #include <chrono>
 #include <condition_variable>
-#include <iostream>
 
 using namespace std;
 
-// компиляция выполняется на gcc 7.0.1 Kubuntu 17.04 x64
+// проверялось на gcc 7.0.1 Kubuntu 17.04 x64
 // с включённым c++17
 
 
@@ -76,8 +75,6 @@ void QueueConcurrent<T>::push(T &&item)
     //m_list.merge(std::move(item));
     m_list.push_back(std::move(item));
 
-    cout << "push :" << item << endl;
-
     // уведомляем, что в содержимое контейнера изменилось
     m_condVar.notify_one();
 }
@@ -95,8 +92,6 @@ T QueueConcurrent<T>::pop()
     // извлекаем элемент из контейнера
     auto item = m_list.front();//.extract(m_list.begin());
     m_list.pop_front();
-
-    cout << "pop :" << item << endl;
 
     // снимаем блокировку
     t_locker.unlock();
