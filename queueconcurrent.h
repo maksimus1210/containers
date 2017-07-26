@@ -115,32 +115,11 @@ bool QueueConcurrent<T>::wait(int64_t ms)
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
 
-    // получаем текущее время
-    auto now = chrono::system_clock::now();
-
     // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
-    m_condVar.wait_until(t_locker, now + ms*1ms);
+    m_condVar.wait_until(t_locker, chrono::system_clock::now() + ms*1ms);
 
     // возвращает true если контейнер не пуст, иначе возвращаем false
     return !m_list.empty();
 }
 
 #endif // QUEUECONCURRENT_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
