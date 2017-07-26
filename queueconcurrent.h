@@ -29,9 +29,9 @@ public:
 
     /**
      * \brief Добавление элемента в контейнер.
-     * \param data - элемент.
+     * \param item - элемент.
      */
-    void push(T &&data);
+    void push(T &&item);
 
     /**
      * \brief Извлечение элемента из контейнера.
