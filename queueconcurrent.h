@@ -118,8 +118,14 @@ bool QueueConcurrent<T>::wait(int64_t ms)
     // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
     m_condVar.wait_until(t_locker, chrono::system_clock::now() + ms*1ms);
 
-    // возвращает true если контейнер не пуст, иначе возвращаем false
-    return !m_list.empty();
+    // проверяем состояние контейнера
+    bool t_state = !m_list.empty();
+
+    // снимаем блокировку
+    t_locker.unlock();
+
+    // возвращаем состояние контейнера
+    return t_state;
 }
 
 #endif // QUEUECONCURRENT_H
