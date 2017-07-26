@@ -103,12 +103,17 @@ T QueueConcurrent<T>::pop()
 template <typename T>
 bool QueueConcurrent<T>::wait(int64_t ms)
 {
+    // блокируем доступ к m_list на время проверки
+    {
+        lock_guard<mutex> lock(m_mutex);
+
+        // возвращает true если контейнер не пуст, иначе входим в ожидание
+        if (!m_list.empty())
+            return true;
+    }
+    
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
-
-    // возвращает true если контейнер не пуст, иначе входим в ожидание
-    if (!m_list.empty())
-        return true;
 
     // получаем текущее время
     auto now = chrono::system_clock::now();
