@@ -102,18 +102,13 @@ T QueueConcurrent<T>::pop()
 
 template <typename T>
 bool QueueConcurrent<T>::wait(int64_t ms)
-{
-    // блокируем доступ к m_list на время проверки
-    {
-        lock_guard<mutex> lock(m_mutex);
-
-        // возвращает true если контейнер не пуст, иначе входим в ожидание
-        if (!m_list.empty())
-            return true;
-    }
-    
+{ 
     // связываем блокировщик с переменной condition_variable
     unique_lock<mutex> t_locker(m_mutex);
+       
+    // возвращает true если контейнер не пуст, иначе входим в ожидание
+    if (!m_list.empty())
+        return true;
 
     // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
     m_condVar.wait_until(t_locker, chrono::system_clock::now() + ms*1ms);
