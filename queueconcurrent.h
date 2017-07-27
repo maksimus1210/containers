@@ -60,9 +60,6 @@ void QueueConcurrent<T>::clear()
 
     // очищаем контейнер
     m_list.clear();
-
-    // уведомляем, что в содержимое контейнера изменилось
-    m_condVar.notify_one();
 }
 
 template <typename T>
@@ -72,8 +69,7 @@ void QueueConcurrent<T>::push(T &&item)
     unique_lock<mutex> t_locker(m_mutex);
 
     // добавляем в контейнер новый элемент
-    //m_list.merge(std::move(item));
-    m_list.push_back(std::move(item));
+    m_list.emplace_back(item);
 
     // уведомляем, что в содержимое контейнера изменилось
     m_condVar.notify_one();
@@ -90,7 +86,7 @@ T QueueConcurrent<T>::pop()
         m_condVar.wait(t_locker);
 
     // извлекаем элемент из контейнера
-    auto item = m_list.front();//.extract(m_list.begin());
+    auto item = m_list.front();
     m_list.pop_front();
 
     // снимаем блокировку
