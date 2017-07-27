@@ -55,7 +55,7 @@ private:
 template <typename T>
 void QueueConcurrent<T>::clear()
 {
-    // блокируем доступ
+    // связываем блокировщик с переменной condition_variable
     unique_lock<mutex> t_locker(m_mutex);
 
     // очищаем контейнер
@@ -68,7 +68,7 @@ void QueueConcurrent<T>::clear()
 template <typename T>
 void QueueConcurrent<T>::push(T &&item)
 {
-    // блокируем доступ
+    // связываем блокировщик с переменной condition_variable
     unique_lock<mutex> t_locker(m_mutex);
 
     // добавляем в контейнер новый элемент
@@ -82,7 +82,7 @@ void QueueConcurrent<T>::push(T &&item)
 template <typename T>
 T QueueConcurrent<T>::pop()
 {
-    // блокируем доступ
+    // связываем блокировщик с переменной condition_variable
     unique_lock<mutex> t_locker(m_mutex);
 
     // ожидаем наполнения контейнера
@@ -112,7 +112,7 @@ bool QueueConcurrent<T>::wait(int64_t ms)
             return true;
     }
     
-    // блокируем доступ
+    // связываем блокировщик с переменной condition_variable
     unique_lock<mutex> t_locker(m_mutex);
 
     // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
