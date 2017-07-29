@@ -40,11 +40,11 @@ public:
     T pop();
 
     /**
-     * \brief Ожидает изменения содержимого контейнера в течении заданного времени.
-     * \param ms - максимальное время ожидания (мс).
-     * \return если в контейнер не пуст возвращает true, иначе возвращает false.
+     * \brief Попытка извлечь элемент из списка в течении заданного времени.
+     * \param dstItem - элемент в который будет извлечён объект из контейнера.
+     * \param ms - максимальное время ожидания (мс)
      */
-    bool wait(int64_t ms);
+    bool tryPop(T &dstItem, int64_t ms);
 
 private:
     list<T> m_list;
@@ -97,20 +97,26 @@ T QueueConcurrent<T>::pop()
 }
 
 template <typename T>
-bool QueueConcurrent<T>::wait(int64_t ms)
-{ 
+bool QueueConcurrent<T>::tryPop(T &dstItem, int64_t ms)
+{
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
-       
+
     // возвращает true если контейнер не пуст, иначе входим в ожидание
-    if (!m_list.empty())
-        return true;
+    if (m_list.empty()) {
+        // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
+        m_condVar.wait_until(t_locker, chrono::system_clock::now() + ms*1ms);
 
-    // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
-    m_condVar.wait_until(t_locker, chrono::system_clock::now() + ms*1ms);
+        // если контейнер пуст, возвращаем false
+        if (m_list.empty())
+            return false;
+    }
 
-    // возвращаем состояние контейнера
-    return !m_list.empty();
+    // извлекаем элемент из контейнера
+    dstItem = m_list.front();
+    m_list.pop_front();
+
+    return true;
 }
 
 #endif // QUEUECONCURRENT_H
