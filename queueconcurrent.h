@@ -16,7 +16,6 @@ class QueueConcurrent
 {
     using sys_clock = chrono::system_clock;
     using chrono_ms = chrono::milliseconds;
-    using stat      = cv_status;
 
 public:
     QueueConcurrent() = default;
