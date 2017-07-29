@@ -9,7 +9,7 @@
 using namespace std;
 
 template <typename T>
-class RingVectorConcurrent
+class RingBufferConcurrent
 {
     using sys_clock = chrono::system_clock;
     using chrono_ms = chrono::milliseconds;
@@ -21,12 +21,12 @@ public:
      *
      * \details Размер буфера может быть только кратным степени двойки.
      */
-    explicit RingVectorConcurrent(size_t t_size = 0);
+    explicit RingBufferConcurrent(size_t t_size = 0);
 
-    RingVectorConcurrent(const RingVectorConcurrent &) = delete;
-    RingVectorConcurrent(RingVectorConcurrent &&) = delete;
-    RingVectorConcurrent &operator=(const RingVectorConcurrent &) = delete;
-    RingVectorConcurrent &operator=(RingVectorConcurrent &&) = delete;
+    RingBufferConcurrent(const RingBufferConcurrent &) = delete;
+    RingBufferConcurrent(RingBufferConcurrent &&) = delete;
+    RingBufferConcurrent &operator=(const RingBufferConcurrent &) = delete;
+    RingBufferConcurrent &operator=(RingBufferConcurrent &&) = delete;
 
 
     /**
@@ -111,7 +111,7 @@ private:
 };
 
 template <typename T>
-RingVectorConcurrent<T>::RingVectorConcurrent(size_t t_size) :
+RingBufferConcurrent<T>::RingBufferConcurrent(size_t t_size) :
   m_vector(pow2Next(t_size)),
   m_size(m_vector.size()),
   m_mask(std::max(0, static_cast<int32_t>(m_size) - 1)),
@@ -125,7 +125,7 @@ RingVectorConcurrent<T>::RingVectorConcurrent(size_t t_size) :
 }
 
 template <typename T>
-void RingVectorConcurrent<T>::resize(size_t t_size)
+void RingBufferConcurrent<T>::resize(size_t t_size)
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
@@ -152,7 +152,7 @@ void RingVectorConcurrent<T>::resize(size_t t_size)
 }
 
 template <typename T>
-size_t RingVectorConcurrent<T>::size() const
+size_t RingBufferConcurrent<T>::size() const
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
@@ -162,7 +162,7 @@ size_t RingVectorConcurrent<T>::size() const
 }
 
 template <typename T>
-void RingVectorConcurrent<T>::clear()
+void RingBufferConcurrent<T>::clear()
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
@@ -178,7 +178,7 @@ void RingVectorConcurrent<T>::clear()
 }
 
 template <typename T>
-void RingVectorConcurrent<T>::write(const vector<T> &items)
+void RingBufferConcurrent<T>::write(const vector<T> &items)
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
@@ -204,7 +204,7 @@ void RingVectorConcurrent<T>::write(const vector<T> &items)
 }
 
 template <typename T>
-void RingVectorConcurrent<T>::read(vector<T> &dst)
+void RingBufferConcurrent<T>::read(vector<T> &dst)
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
@@ -230,7 +230,7 @@ void RingVectorConcurrent<T>::read(vector<T> &dst)
 }
 
 template <typename T>
-bool RingVectorConcurrent<T>::tryWrite(const vector<T> &items, const chrono_ms duration)
+bool RingBufferConcurrent<T>::tryWrite(const vector<T> &items, const chrono_ms duration)
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
@@ -263,7 +263,7 @@ bool RingVectorConcurrent<T>::tryWrite(const vector<T> &items, const chrono_ms d
 }
 
 template <typename T>
-bool RingVectorConcurrent<T>::tryRead(vector<T> &dst, const chrono_ms duration)
+bool RingBufferConcurrent<T>::tryRead(vector<T> &dst, const chrono_ms duration)
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
