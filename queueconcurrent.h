@@ -44,7 +44,7 @@ public:
      * \param dstItem - элемент в который будет извлечён объект из контейнера.
      * \param ms - максимальное время ожидания (мс)
      */
-    bool tryPop(T &dstItem, int64_t ms);
+    bool tryPop(T &dstItem, std::chrono::milliseconds duration);
 
 private:
     list<T> m_list;
@@ -97,7 +97,7 @@ T QueueConcurrent<T>::pop()
 }
 
 template <typename T>
-bool QueueConcurrent<T>::tryPop(T &dstItem, int64_t ms)
+bool QueueConcurrent<T>::tryPop(T &dstItem, std::chrono::milliseconds duration)
 {
     // блокируем доступ
     unique_lock<mutex> t_locker(m_mutex);
@@ -105,7 +105,7 @@ bool QueueConcurrent<T>::tryPop(T &dstItem, int64_t ms)
     // возвращает true если контейнер не пуст, иначе входим в ожидание
     if (m_list.empty()) {
         // ожидаем срабатывания условной переменной по таймауту или событию notify_one()
-        m_condVar.wait_until(t_locker, chrono::system_clock::now() + ms*1ms);
+        m_condVar.wait_until(t_locker, chrono::system_clock::now() + duration);
 
         // если контейнер пуст, возвращаем false
         if (m_list.empty())
