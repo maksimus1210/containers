@@ -191,7 +191,7 @@ void RingBufferConcurrent<T>::write(const vector<T> &items)
     while (items.size() > m_bytesForWrite)
         m_condVarRead.wait(t_locker);
 
-    // смещаем указатели
+    // инициализируем счётчики
     m_bytesForWrite -= items.size();
     m_bytesForRead  += items.size();
 
@@ -217,7 +217,7 @@ void RingBufferConcurrent<T>::read(vector<T> &dst)
     while (dst.size() > m_bytesForRead)
         m_condVarWrite.wait(t_locker);
 
-    // смещаем указатели
+    // инициализируем счётчики
     m_bytesForWrite += dst.size();
     m_bytesForRead  -= dst.size();
 
@@ -247,7 +247,7 @@ bool RingBufferConcurrent<T>::tryWrite(const vector<T> &items, const chrono_ms d
     if (!m_condVarRead.wait_until(t_locker, sys_clock::now() + duration, cmp))
         return false;
 
-    // смещаем указатели
+    // инициализируем счётчики
     m_bytesForWrite -= items.size();
     m_bytesForRead  += items.size();
 
@@ -280,7 +280,7 @@ bool RingBufferConcurrent<T>::tryRead(vector<T> &dst, const chrono_ms duration)
     if (!m_condVarWrite.wait_until(t_locker, sys_clock::now() + duration, cmp))
         return false;
 
-    // смещаем указатели
+    // инициализируем счётчики
     m_bytesForWrite += dst.size();
     m_bytesForRead  -= dst.size();
 
